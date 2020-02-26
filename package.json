@@ -3,11 +3,15 @@
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "start": "node ./index.js",
+    "start": "node -r dotenv/config ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "MIT",
   "dependencies": {
+    "@slack/web-api": "^5.7.0",
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
   }
 }
