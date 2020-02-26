@@ -29,8 +29,9 @@ app.post('/events', (req, res) => {
     case 'review_requested': {
       const { url, number, title } = event.pull_request
       const userName = event.pull_request.user.login
-      const reviewerNames = event.requested_reviewers
-      console.log(url, number, title, userName, reviewerNames)
+      const reviewerName = event.requested_reviewer
+      console.log(url, number, title, userName, reviewerName)
+      break
     }
     default: {
       console.log(`EVENT NOT HANDLED: ${event.action}`)
