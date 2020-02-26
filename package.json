@@ -9,7 +9,8 @@
   "license": "MIT",
   "dependencies": {
     "@slack/web-api": "^5.7.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4"
   },
   "devDependencies": {
     "dotenv": "^8.2.0"
