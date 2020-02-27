@@ -1,15 +1,33 @@
 const express = require('express')
 const asyncHandler = require('express-async-handler')
+const { Octokit } = require("@octokit/rest")
 const { WebClient } = require('@slack/web-api')
 
 const port = process.env.PORT
+const githubToken = 'd0b0a5ddcafb275b9c82ac35821ce5a77e2df081'
 const slackToken = process.env.SLACK_TOKEN
 const users = JSON.parse(Buffer.from(process.env.USERS, 'base64').toString('ascii'))
 
 const app = express()
 const slackClient = new WebClient(slackToken)
 
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+
+app.get('/test', asyncHandler(async (req, res) => {
+  const octokit = new Octokit({ auth: githubToken })
+
+  const result = await octokit.search.issuesAndPullRequests({ q: 'is:pr is:open org:carnivalmobile review-requested:j-stokes' })
+  console.log(result.data)
+  console.log(result.data.items[0].user)
+  console.log(result.data.items[0].pull_request)
+  res.status(204).send()
+}))
+
+app.post('/messages', asyncHandler(async (req, res) => {
+  await slackClient.chat.postMessage({ text: 'Hi, Eugene!', channel: 'UNWGV07MW' });
+  res.status(204).send()
+}))
 
 app.post('/events', asyncHandler(async (req, res) => {
   const event = req.body
@@ -35,6 +53,11 @@ app.post('/events', asyncHandler(async (req, res) => {
       console.log(`EVENT NOT HANDLED: ${event.action}`)
     }
   }
+  res.status(204).send()
+}))
+
+app.post('/pulls', asyncHandler(async(req, res) => {
+  console.log(req.body)
   res.status(204).send()
 }))
 
