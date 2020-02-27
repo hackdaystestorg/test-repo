@@ -4,7 +4,7 @@ const { Octokit } = require("@octokit/rest")
 const { WebClient } = require('@slack/web-api')
 
 const port = process.env.PORT
-const githubToken = 'd0b0a5ddcafb275b9c82ac35821ce5a77e2df081'
+const githubToken = process.env.GITHUB_TOKEN
 const slackToken = process.env.SLACK_TOKEN
 const users = JSON.parse(Buffer.from(process.env.USERS, 'base64').toString('ascii'))
 
@@ -47,6 +47,10 @@ app.post('/events', asyncHandler(async (req, res) => {
       const text = `${user.name} requested your review on <${pull.url}|PR#${pull.number}>: ${pull.title}`
       const channel = reviewer.sid
       await slackClient.chat.postMessage({ text, channel, as_user: true });
+      break
+    }
+    case 'submitted': {
+      console.log(event)
       break
     }
     default: {
