@@ -71,9 +71,27 @@ app.post('/events', asyncHandler(async (req, res) => {
       if (!reviewer) {
         throw new Error(`User with the Github name '${reviewerName}' not found`)
       }
-      const text = `${user.name} requested your review on <${pull.url}|PR#${pull.number}>: ${pull.title}`
       const channel = reviewer.sid
-      await slack.chat.postMessage({ text, channel, as_user: true });
+      const text = `${user.name} requested your review on PR#${pull.number}: <${pull.html_url}|${pull.title}>`
+      await slack.chat.postMessage({ channel, text, as_user: true });
+      break
+    }
+    case 'submitted': {
+      const pull = event.pull_request
+      const authorName = pull.user.login
+      const author = users.find(u => u.gname === authorName)
+      if (!author) {
+        throw new Error(`User with the Github name '${authorName}' not found`)
+      }
+      const reviewerName = event.review.user.login
+      const reviewer = users.find(u => u.gname === reviewerName)
+      if (!reviewer) {
+        throw new Error(`User with the Github name '${reviewerName}' not found`)
+      }
+      const channel = author.sid
+      const action = { 'changes_requested': 'requested changes on', 'approved': 'approved', 'commented': 'commented' }[event.review.state]
+      const text = `${reviewer.name} ${action} your PR#${pull.number}: <${pull.html_url}|${pull.title}>`
+      await slack.chat.postMessage({ channel, text, as_user: true });
       break
     }
     default: {
